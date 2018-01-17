@@ -11,3 +11,57 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+#Modify less to colorize output
+export LESS='-R'
+export LESSOPEN='|~/.lessfilter %s'
+export MORE='-R'
+
+# Modify path for coreutils
+PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+# Modify ls
+export QUOTING_STYLE=literal ls
+alias ls='ls --color=auto'
+
+# Modify grep
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+# Helpful cd aliases
+alias ...='cd ../../'
+alias ....='cd ../../../'
+alias .....='cd ../../../..'
+alias .5='cd ../../../../..'
+alias .6='cd ../../../../../..'
+
+# Make parents with mkdir
+alias mkdir='mkdir -pv'
+
+# Colorize diff
+alias diff='colordiff'
+
+# Prettify mount
+alias mount="mount | column -t"
+
+# Start tmux
+#if command -v tmux>/dev/null; then
+  #[[ ! $TERM =~ screen ]] && [ -z $TMUX ] && tmux -u
+#fi
+
+precmd () {
+  # Post pwd / git repo to iTerm and tab title
+  if command git rev-parse --git-dir > /dev/null 2>&1; then
+    window_label=$(git rev-parse --show-toplevel)
+    tab_label=$(echo $window_label | awk -F\/ '{print "[git] " $NF}')
+  else
+    window_label=${PWD/${HOME}/\~}
+    tab_label=$window_label
+  fi
+  echo -ne "\e]2;${window_label}\a"
+  echo -ne "\e]1;${tab_label: -24}\a"
+}
